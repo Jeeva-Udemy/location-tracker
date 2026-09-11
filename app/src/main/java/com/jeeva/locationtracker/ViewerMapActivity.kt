@@ -9,12 +9,6 @@ import android.text.format.DateUtils
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,11 +17,16 @@ import com.google.firebase.database.ValueEventListener
 import com.jeeva.locationtracker.databinding.ActivityViewerMapBinding
 import com.jeeva.locationtracker.model.LocationPoint
 import com.jeeva.locationtracker.util.Prefs
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
+import java.io.File
 
-class ViewerMapActivity : AppCompatActivity(), OnMapReadyCallback {
+class ViewerMapActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityViewerMapBinding
-    private var map: GoogleMap? = null
+    private var marker: Marker? = null
     private var latestLocation: LocationPoint? = null
     private var locationListener: ValueEventListener? = null
     private lateinit var familyCode: String
@@ -41,6 +40,16 @@ class ViewerMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Configuration.getInstance().load(
+            applicationContext,
+            getSharedPreferences("osmdroid", MODE_PRIVATE)
+        )
+        Configuration.getInstance().userAgentValue = packageName
+        // Use app-private cache storage so no storage permission is ever needed.
+        val tileBasePath = File(cacheDir, "osmdroid")
+        Configuration.getInstance().osmdroidBasePath = tileBasePath
+        Configuration.getInstance().osmdroidTileCache = File(tileBasePath, "tiles")
+
         super.onCreate(savedInstanceState)
         binding = ActivityViewerMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,15 +62,13 @@ class ViewerMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         familyCode = code
 
-        (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment)
-            .getMapAsync(this)
+        binding.map.setTileSource(TileSourceFactory.MAPNIK)
+        binding.map.setMultiTouchControls(true)
+        binding.map.controller.setZoom(16.0)
 
         binding.shareLocationButton.setOnClickListener { shareLocation() }
         binding.openMapsButton.setOnClickListener { openInMapsApp() }
-    }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
         ensureSignedInAndListen()
     }
 
@@ -96,12 +103,18 @@ class ViewerMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun onLocationUpdated(point: LocationPoint) {
-        val latLng = LatLng(point.lat, point.lng)
-        val currentMap = map ?: return
+        val geoPoint = GeoPoint(point.lat, point.lng)
 
-        currentMap.clear()
-        currentMap.addMarker(MarkerOptions().position(latLng).title(getString(R.string.app_name)))
-        currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+        var currentMarker = marker
+        if (currentMarker == null) {
+            currentMarker = Marker(binding.map)
+            currentMarker.title = getString(R.string.app_name)
+            binding.map.overlays.add(currentMarker)
+            marker = currentMarker
+        }
+        currentMarker.position = geoPoint
+        binding.map.controller.animateTo(geoPoint)
+        binding.map.invalidate()
 
         updateStatusText()
     }
@@ -145,14 +158,16 @@ class ViewerMapActivity : AppCompatActivity(), OnMapReadyCallback {
         startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
+        binding.map.onResume()
         refreshHandler.post(refreshRunnable)
     }
 
-    override fun onStop() {
+    override fun onPause() {
+        binding.map.onPause()
         refreshHandler.removeCallbacks(refreshRunnable)
-        super.onStop()
+        super.onPause()
     }
 
     override fun onDestroy() {

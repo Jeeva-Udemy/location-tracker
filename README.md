@@ -9,14 +9,17 @@ One APK, two roles, chosen once on first launch:
 - **Dad's phone ("Share My Location")** — runs a foreground service that pushes GPS location to
   Firebase every ~30 seconds. Shows a persistent notification the whole time it's active, so it's
   never hidden from him.
-- **Your phone ("Track Family Member")** — shows his live location on a map, and has a
-  "Share This Location" button that opens Android's normal share sheet (WhatsApp, SMS, etc.) with
-  a Google Maps link, so you can forward it to a friend to do the pickup instead.
+- **Your phone ("Track Family Member")** — shows his live location on a free OpenStreetMap-based
+  map, and has a "Share This Location" button that opens Android's normal share sheet (WhatsApp,
+  SMS, etc.) with a Google Maps link, so you can forward it to a friend to do the pickup instead.
 
 The two phones are linked by a short **Family Code** (e.g. `7XQK2M`) you create once on your
 phone and type into his.
 
-## 1. Create a Firebase project (free)
+Everything here runs on free tiers with no credit card needed anywhere — Firebase's Spark plan
+(no billing account required) and OpenStreetMap's free tile service for the map.
+
+## 1. Create a Firebase project (free, no card required)
 
 1. Go to https://console.firebase.google.com and create a new project.
 2. In the project, click **Build → Realtime Database → Create Database**. Start in
@@ -33,24 +36,15 @@ phone and type into his.
    - Download the generated **`google-services.json`**. Keep it somewhere safe on your computer —
      you'll upload its contents as a GitHub secret below, not commit it to the repo.
 
-## 2. Get a Google Maps API key
-
-1. Go to https://console.cloud.google.com/google/maps-apis/credentials (same Google account
-   is fine).
-2. Create an API key, then click into it and under **API restrictions** enable
-   **Maps SDK for Android**. Leave **Application restrictions** unrestricted for now — you can
-   lock it to the app's package name + SHA-1 later once you have a signed build.
-3. Copy the key value — you'll paste it as a GitHub secret below.
-
-## 3. Build the APK on GitHub (no local install needed)
+## 2. Build the APK on GitHub (no local install needed)
 
 This repo has a GitHub Actions workflow ([`.github/workflows/android-build.yml`](.github/workflows/android-build.yml))
 that builds the APK entirely in the cloud — you never need Android Studio or an SDK on your own
-machine. It needs the two things from steps 1–2 above as **repository secrets** so it can build
-without them ever being committed to the (public) repo.
+machine. It needs the `google-services.json` from step 1 as a **repository secret** so it can
+build without it ever being committed to the (public) repo.
 
-**Add the secrets** — on GitHub, go to your repo → **Settings → Secrets and variables → Actions →
-New repository secret**, and add both:
+**Add the secret** — on GitHub, go to your repo → **Settings → Secrets and variables → Actions →
+New repository secret**:
 
 - `GOOGLE_SERVICES_JSON` — the **base64-encoded** contents of the `google-services.json` you
   downloaded in step 1. Generate it with:
@@ -59,14 +53,13 @@ New repository secret**, and add both:
   ```
   (adjust the path to wherever you saved the file) then paste the clipboard contents as the
   secret value.
-- `MAPS_API_KEY` — the raw Maps API key from step 2, pasted as-is.
 
-**Run the build** — once both secrets are added, go to the repo's **Actions** tab → select
+**Run the build** — once the secret is added, go to the repo's **Actions** tab → select
 **Android Build** → **Run workflow** (or just push a commit; it also runs automatically on every
 push to `main`). When it finishes, open the completed run and download the **`family-locator-debug-apk`**
 artifact — that zip contains `app-debug.apk`.
 
-Until both secrets are added, the workflow will fail on purpose at the "Write google-services.json
+Until the secret is added, the workflow will fail on purpose at the "Write google-services.json
 from secret" step with a clear error, rather than a confusing Gradle failure — that's expected on
 the very first run.
 
@@ -83,14 +76,12 @@ launch.
 
 1. Install **Android Studio** (https://developer.android.com/studio).
 2. Place the downloaded `google-services.json` at `app/google-services.json`.
-3. Open [`gradle.properties`](gradle.properties) and replace `REPLACE_WITH_YOUR_MAPS_API_KEY`
-   with your real key.
-4. Open this folder as a project in Android Studio, let it sync, then **Run** (with a phone
+3. Open this folder as a project in Android Studio, let it sync, then **Run** (with a phone
    connected over USB) or **Build → Generate Signed Bundle / APK**.
 
 </details>
 
-## 4. Set it up
+## 3. Set it up
 
 **On your phone:** open the app → "This is my phone" → **Create New Family Code** → tap
 **Share Code** and send it to your dad's phone (text, WhatsApp, or just read it to him) → tap

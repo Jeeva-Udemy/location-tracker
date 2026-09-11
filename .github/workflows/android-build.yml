@@ -39,9 +39,7 @@ jobs:
           gradle-version: 8.6
 
       - name: Build debug APK
-        env:
-          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: gradle assembleDebug -PMAPS_API_KEY="$MAPS_API_KEY" --no-daemon
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

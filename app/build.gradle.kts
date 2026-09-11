@@ -14,9 +14,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
-        val mapsApiKey = (project.findProperty("MAPS_API_KEY") as String?) ?: ""
-        manifestPlaceholders["mapsApiKey"] = mapsApiKey
     }
 
     buildTypes {
@@ -54,6 +51,8 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
 
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // Free OpenStreetMap-based map view — no API key or billing account required.
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }
