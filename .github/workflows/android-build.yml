@@ -28,10 +28,11 @@ jobs:
           fi
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > app/google-services.json
 
-      - name: Ensure required Android SDK packages
-        run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" > /dev/null
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install required Android SDK packages
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
