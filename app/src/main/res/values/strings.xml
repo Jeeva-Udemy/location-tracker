@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Family Locator</string>
+
+    <string name="title_parent_setup">Share My Location</string>
+    <string name="title_parent_status">Sharing Active</string>
+    <string name="title_viewer_setup">Track Family Member</string>
+    <string name="title_viewer_map">Location</string>
+
+    <string name="main_intro">Who is using this phone?</string>
+    <string name="main_role_parent">This is Dad\'s phone\n(share this phone\'s location)</string>
+    <string name="main_role_viewer">This is my phone\n(track a family member)</string>
+
+    <string name="parent_setup_intro">Enter the Family Code your child gave you, then tap Start. This phone will keep sharing its location with them while this is on.</string>
+    <string name="parent_setup_code_hint">Family Code</string>
+    <string name="parent_setup_start">Start Sharing My Location</string>
+
+    <string name="parent_status_title">Your location is being shared</string>
+    <string name="parent_status_code_prefix">Family Code: %1$s</string>
+    <string name="parent_status_explain">A notification will stay visible the whole time this is active, so you always know it\'s on. Turn off Wi-Fi/mobile data or airplane mode will pause sharing.</string>
+    <string name="parent_status_stop">Stop Sharing</string>
+
+    <string name="viewer_setup_intro">Create a new Family Code and share it with your father, or enter a code you already created on another device.</string>
+    <string name="viewer_setup_create">Create New Family Code</string>
+    <string name="viewer_setup_join_hint">Family Code</string>
+    <string name="viewer_setup_join">Continue With This Code</string>
+    <string name="viewer_setup_share_code">Share Code</string>
+    <string name="viewer_setup_continue">Continue to Map</string>
+    <string name="viewer_setup_share_message">Open the Family Locator app on your phone, choose \"This is Dad\'s phone\", and enter this Family Code: %1$s</string>
+
+    <string name="viewer_map_waiting">Waiting for location…</string>
+    <string name="viewer_map_last_updated">Updated %1$s</string>
+    <string name="viewer_map_share">Share This Location</string>
+    <string name="viewer_map_open_maps">Open in Maps</string>
+    <string name="viewer_map_share_text">Here\'s the current location: %1$s</string>
+
+    <string name="notification_channel_name">Location Sharing</string>
+    <string name="notification_title">Sharing your location</string>
+    <string name="notification_text">Tap to manage location sharing</string>
+    <string name="notification_stop_action">Stop</string>
+
+    <string name="error_empty_code">Please enter a family code</string>
+    <string name="permission_location_required">Location permission is required to share your location.</string>
+</resources>
