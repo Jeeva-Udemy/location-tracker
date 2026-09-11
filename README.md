@@ -98,12 +98,18 @@ from him. Use **Share This Location** any time to forward his current spot to a 
 
 ## Notes on reliability & privacy
 
+- The Family Code and role only need to be entered **once** on each phone — after that, opening
+  the app goes straight to the sharing/map screen automatically, and sharing keeps running in the
+  background even after you close the app.
+- On Dad's phone, sharing automatically resumes after the phone restarts or the app updates —
+  no need to reopen the app after a reboot.
 - Location only leaves his phone while the "Sharing your location" notification is showing —
   there's no hidden or silent mode, by design, since covert tracking of a person is not something
   this app is meant to do.
 - Some phone brands (Xiaomi, Oppo, Samsung, etc.) aggressively kill background apps regardless of
-  Android's own rules. If updates stop coming in, check the phone's battery-saver / "auto-start"
-  settings for the app and make sure it's allowed to run in the background.
+  Android's own rules — even foreground services and boot receivers. If updates stop coming in,
+  check the phone's battery-saver / "auto-start" settings for the app and make sure it's allowed
+  to run in the background and to auto-start after reboot.
 - The Family Code is the only thing protecting the data — anyone who has it and opens the app
   (or calls the Firebase REST API directly) can read or write that family's location. Don't post
   it publicly; if it ever leaks, create a new code and re-enter it on both phones.
